@@ -1,41 +1,30 @@
-/* ====== Theme tokens: navy family ====== */
+/* ====== Theme tokens: black with navy-blue accents ====== */
 :root {
-  --bg: #f7f9fc;
-  --surface: #ffffff;
-  --ink: #0b1b3f;
-  --title: #061237;
-  --muted: #5b6680;
-  --faint: #c3cbdc;
-  --line: #e3e8f2;
-  --grid: #e8ecf4;
-  --axis: #cfd7e6;
-  --accent: #2f5fd0;
-  --study: #0a2463;
-  --research: #2f5fd0;
-  --industry: #2b8ab3;
-  --teaching: #7c6fd6;
-  /* Always-dark navy surfaces (hero, contact band) */
-  --navy-0: #040b22;
-  --navy-1: #061237;
-  --navy-2: #0a2463;
-  --navy-3: #163a8a;
+  color-scheme: dark;
+  --bg: #000;
+  --surface: #0d0d10;
+  --ink: #ececf1;
+  --title: #fff;
+  --muted: #8e8e99;
+  --faint: #2a2a30;
+  --line: #1c1c21;
+  --grid: #141418;
+  --axis: #26262c;
+  --accent: #7aa2ff;
+  --study: #c3d1ff;
+  --research: #5b8cff;
+  --industry: #5cc8e8;
+  --teaching: #a78bfa;
+  /* The hero and contact band reuse these, now plain black */
+  --navy-0: #000;
+  --navy-1: #000;
+  --navy-2: #000;
+  --navy-3: #000;
   --ice: #dbe6ff;
   --sky: #6f9bff;
   --cyan: #5cc8e8;
   --sans: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
   --ease: cubic-bezier(.16, 1, .3, 1);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #050b1c; --surface: #0c1630; --ink: #e9efff; --title: #f4f7ff; --muted: #97a3c2; --faint: #2b3757;
-    --line: #18233f; --grid: #141e38; --axis: #26324f; --accent: #7aa2ff;
-    --study: #c3d1ff; --research: #5b8cff; --industry: #5cc8e8; --teaching: #a78bfa;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #050b1c; --surface: #0c1630; --ink: #e9efff; --title: #f4f7ff; --muted: #97a3c2; --faint: #2b3757;
-  --line: #18233f; --grid: #141e38; --axis: #26324f; --accent: #7aa2ff;
-  --study: #c3d1ff; --research: #5b8cff; --industry: #5cc8e8; --teaching: #a78bfa;
 }
 
 * { box-sizing: border-box; }
@@ -79,12 +68,12 @@ body.intro-running { overflow: hidden; }
 .nav-links a:hover, .nav-links a.active { opacity: 1; }
 .nav-links a.active::after { transform: scaleX(1); }
 
-/* ====== Hero (always deep navy) ====== */
+/* ====== Hero ====== */
 .hero {
   min-height: 100vh; min-height: 100svh; position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: left; padding: 104px 16px 110px;
-  background: radial-gradient(120% 90% at 50% 0%, var(--navy-2) 0%, var(--navy-1) 45%, var(--navy-0) 100%);
+  background: var(--bg);
   color: #fff;
 }
 .hero-inner { position: relative; z-index: 1; width: 100%; max-width: 1080px; }
@@ -93,20 +82,6 @@ body.intro-running { overflow: hidden; }
   will-change: transform, opacity; transform-origin: 50% 0;
 }
 .hero-main { min-width: 0; }
-
-/* Only the glow layer clips. If the hero clipped, links to #path would scroll the
-   hero's own content up out of reach. */
-.glow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.glow span {
-  position: absolute; border-radius: 50%; filter: blur(80px); opacity: .55;
-  translate: var(--mx, 0) var(--my, 0); transition: translate 1.2s var(--ease);
-}
-.glow span:nth-child(1) { width: 52vmax; height: 52vmax; left: -14vmax; top: -18vmax; background: #1d4ed8; animation: orb1 14s ease-in-out infinite alternate; }
-.glow span:nth-child(2) { width: 40vmax; height: 40vmax; right: -12vmax; top: 10vh; background: #0ea5e9; opacity: .35; animation: orb2 17s ease-in-out infinite alternate; }
-.glow span:nth-child(3) { width: 36vmax; height: 36vmax; left: 25%; bottom: -24vmax; background: #6366f1; opacity: .4; animation: orb3 19s ease-in-out infinite alternate; }
-@keyframes orb1 { to { transform: translate(12vw, 14vh) scale(1.15); } }
-@keyframes orb2 { to { transform: translate(-14vw, 10vh) scale(.85); } }
-@keyframes orb3 { to { transform: translate(10vw, -16vh) scale(1.2); } }
 
 .hello {
   position: relative; height: 1.3em; width: 100%;
@@ -325,14 +300,14 @@ body.intro-running { overflow: hidden; }
 .card {
   position: relative; overflow: hidden;
   background: var(--surface); border-radius: 28px; padding: 34px;
-  box-shadow: 0 1px 0 var(--line), 0 20px 40px -30px rgba(6,18,55,.35);
+  box-shadow: 0 1px 0 var(--line), 0 20px 40px -30px rgba(0,0,0,.6);
   transition: transform .5s var(--ease), box-shadow .5s ease, opacity 1s ease, filter 1s ease;
 }
 .card::before {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s ease;
   background: radial-gradient(380px circle at var(--px, 50%) var(--py, 50%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%);
 }
-.card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 1px 0 var(--line), 0 30px 60px -30px rgba(6,18,55,.45); }
+.card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 1px 0 var(--line), 0 30px 60px -30px rgba(0,0,0,.7); }
 .card:hover::before { opacity: 1; }
 .card-meta { margin: 0 0 8px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 .card h3 { margin: 0 0 12px; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em; color: var(--title); line-height: 1.15; }
@@ -340,12 +315,10 @@ body.intro-running { overflow: hidden; }
 .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .tags li { font-size: .8rem; font-weight: 500; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 9%, transparent); color: var(--ink); }
 
-/* Contact band (always navy) */
+/* Contact band */
 .band {
   margin-top: 140px; color: #fff; position: relative; overflow: clip;
-  background:
-    radial-gradient(70% 60% at 50% 45%, color-mix(in srgb, var(--navy-3) 85%, transparent), transparent 70%),
-    linear-gradient(180deg, var(--navy-1), var(--navy-2) 50%, var(--navy-1));
+  background: var(--bg); border-top: 1px solid var(--line);
 }
 .contact { max-width: 1080px; margin: 0 auto; padding: 140px 16px 120px; text-align: center; }
 .contact-title {
@@ -399,7 +372,6 @@ body.intro-running { overflow: hidden; }
 /* ====== Reduced motion ====== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .glow span { translate: none; }
   [data-reveal], [data-split] .c, .path-label, .path-bar, .path-grid span, .path-axis b,
   .iam .ch { opacity: 1 !important; transform: none !important; filter: none !important; }
   .statement .wd { color: #fff; }

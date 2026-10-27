@@ -113,19 +113,6 @@
     if (target) setTimeout(() => target.scrollIntoView({ behavior: "instant" }), 0);
   } else playIntro();
 
-  /* ================= Hero glow follows the pointer ================= */
-  if (!reduceMotion && matchMedia("(pointer: fine)").matches) {
-    const blobs = $$(".glow span");
-    addEventListener("pointermove", e => {
-      const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
-      blobs.forEach((b, i) => {
-        const k = (i % 2 ? -1 : 1) * (30 + i * 14);
-        b.style.setProperty("--mx", `${x * k}px`);
-        b.style.setProperty("--my", `${y * k}px`);
-      });
-    }, { passive: true });
-  }
-
   /* ================= Nav ================= */
   const nav = $(".nav");
   const heroTop = $(".hero-top");
