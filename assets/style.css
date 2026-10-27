@@ -122,13 +122,6 @@ body.intro-running { overflow: hidden; }
 .iam .ch { display: inline-block; opacity: 0; transform: translateY(-80px) scale(.8); }
 .iam .ch.sp { width: .26em; }
 .iam .ch.in { animation: chDrop .75s cubic-bezier(.25,1.6,.45,1) forwards; animation-delay: var(--d); }
-/* Each letter of the name shows its own slice of one continuous gradient. */
-.iam .name {
-  background: linear-gradient(100deg, var(--ice), var(--sky) 50%, var(--cyan));
-  background-size: 400% 100%; background-position: var(--bp) 0;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  padding-bottom: .06em;
-}
 .hero.settled .iam .ch { animation: none; transition: none; opacity: 1; transform: none; }
 @keyframes chDrop {
   0% { opacity: 0; transform: translateY(-80px) scale(.8); filter: blur(8px); }

@@ -26,14 +26,13 @@
   const helloEls = $$("span", hello);
 
   [...GREETING].forEach(ch => addChar(ch, false));
-  [...NAME].forEach((ch, i) => addChar(ch, true, i));
+  [...NAME].forEach(ch => addChar(ch, true));
   addChar(" ", false);
   addChar(EMOJI, false);
-  function addChar(ch, isName, i) {
+  function addChar(ch, isName) {
     const s = document.createElement("span");
     s.className = "ch" + (ch === " " ? " sp" : "") + (isName ? " name" : "");
     s.textContent = ch === " " ? " " : ch;
-    if (isName) s.style.setProperty("--bp", `${(i / (NAME.length - 1)) * 100}%`);
     s.setAttribute("aria-hidden", "true");
     iam.appendChild(s);
   }
