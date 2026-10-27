@@ -103,12 +103,16 @@
   addEventListener("keydown", e => { if (e.key === "Escape") finishIntro(); });
 
   // Skip the intro when reduced motion is on or the page opens partway down (e.g. a #link).
-  if (reduceMotion || location.hash || scrollY > 10) finishIntro();
-  else playIntro();
+  if (reduceMotion || location.hash || scrollY > 10) {
+    finishIntro();
+    // The scroll lock blocked the browser's own jump to the #section, so do it now.
+    const target = location.hash && document.getElementById(location.hash.slice(1));
+    if (target) setTimeout(() => target.scrollIntoView({ behavior: "instant" }), 0);
+  } else playIntro();
 
-  /* ================= Background blobs follow the pointer ================= */
+  /* ================= Hero glow follows the pointer ================= */
   if (!reduceMotion && matchMedia("(pointer: fine)").matches) {
-    const blobs = $$(".blob");
+    const blobs = $$(".glow span");
     addEventListener("pointermove", e => {
       const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
       blobs.forEach((b, i) => {
@@ -121,8 +125,48 @@
 
   /* ================= Nav ================= */
   const nav = $(".nav");
-  const onScroll = () => nav.classList.toggle("scrolled", scrollY > 20);
-  addEventListener("scroll", onScroll, { passive: true });
+  const heroInner = $(".hero-inner");
+  const statement = $("[data-words]");
+
+  // Light up the About statement word by word as it scrolls through the viewport.
+  const walker = document.createTreeWalker(statement, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach(node => {
+    const frag = document.createDocumentFragment();
+    node.textContent.split(/(\s+)/).forEach(part => {
+      if (!part) return;
+      if (/^\s+$/.test(part)) return frag.append(part);
+      const s = document.createElement("span");
+      s.className = "wd";
+      s.textContent = part;
+      frag.append(s);
+    });
+    node.replaceWith(frag);
+  });
+  const words = $$(".wd", statement);
+
+  let ticking = false;
+  function onScroll() {
+    ticking = false;
+    const y = scrollY, vh = innerHeight;
+    nav.classList.toggle("scrolled", y > 20);
+    nav.classList.toggle("on-dark", y < hero.offsetHeight - 40);
+
+    // Hero content shrinks and fades away as you scroll past it.
+    if (!reduceMotion && y < vh * 1.2) {
+      const p = Math.min(1, y / vh);
+      heroInner.style.transform = `translateY(${p * 80}px) scale(${1 - p * 0.12})`;
+      heroInner.style.opacity = String(Math.max(0, 1 - p * 1.4));
+    }
+
+    const r = statement.getBoundingClientRect();
+    const p = reduceMotion ? 1 : Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+    const lit = Math.round(p * words.length);
+    words.forEach((w, i) => w.classList.toggle("lit", i < lit));
+  }
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  addEventListener("resize", onScroll);
   onScroll();
 
   const navLinks = $$(".nav-links a");
