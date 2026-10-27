@@ -6,10 +6,11 @@
   document.getElementById("year").textContent = new Date().getFullYear();
 
   /* ================= Hero intro ================= */
-  // "Hello" drops in, in different languages, ending on Vietnamese.
-  const HELLOS = ["Hello", "Hola", "Bonjour", "こんにちは", "안녕하세요", "Ciao", "Hallo", "مرحبا", "你好", "Olá", "नमस्ते", "Xin chào"];
+  // "Hello" drops in, in different languages, ending on English.
+  const HELLOS = ["Hola", "Bonjour", "こんにちは", "안녕하세요", "Ciao", "Hallo", "مرحبا", "你好", "Olá", "नमस्ते", "Hello"];
   const GREETING = "I'm ";
   const NAME = "Linh";
+  const EMOJI = "🙌";
 
   const hero = $(".hero");
   const hello = $(".hello");
@@ -26,6 +27,8 @@
 
   [...GREETING].forEach(ch => addChar(ch, false));
   [...NAME].forEach((ch, i) => addChar(ch, true, i));
+  addChar(" ", false);
+  addChar(EMOJI, false);
   function addChar(ch, isName, i) {
     const s = document.createElement("span");
     s.className = "ch" + (ch === " " ? " sp" : "") + (isName ? " name" : "");
