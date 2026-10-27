@@ -223,6 +223,16 @@ body.intro-running { overflow: hidden; }
             transform: scaleX(0); transform-origin: left center;
             transition: transform .9s cubic-bezier(.22,.8,.24,1); transition-delay: var(--d); }
 .path-bar.ongoing { background: linear-gradient(90deg, var(--c) 0 70%, color-mix(in srgb, var(--c) 15%, transparent)); }
+.path-bar.split { background: none; }
+.path-bar .seg { position: absolute; top: 0; bottom: 0; border-radius: inherit; background: var(--c); }
+.path-bar .gap { position: absolute; top: 50%; height: 0; }
+.path-bar .gap::before { content: ""; display: block; margin: -1px 6px 0; border-top: 2px dashed color-mix(in srgb, var(--c) 55%, transparent); }
+.path-bar .gap em {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  font-size: .8rem; font-style: italic; color: var(--muted); white-space: nowrap;
+  opacity: 0; transition: opacity .5s ease; transition-delay: calc(var(--d) + .8s);
+}
+.path-row.in .path-bar .gap em { opacity: 1; }
 .path-row.in .path-label { opacity: 1; transform: none; }
 .path-row.in .path-bar { transform: scaleX(1); }
 .path-row.in .path-bar.ongoing::after {

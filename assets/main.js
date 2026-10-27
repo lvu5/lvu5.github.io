@@ -182,9 +182,10 @@
   });
 
   /* ================= Path timeline ================= */
-  // Dates are "YYYY-MM"; end: null means ongoing.
+  // Dates are "YYYY-MM"; end: null means ongoing. Optional gaps: [{ start, end, label }].
   const ENTRIES = [
-    { org: "University of Illinois Chicago", role: "B.S. in Computer Science",         type: "study",    start: "2018-08", end: "2023-05" },
+    { org: "University of Illinois Chicago", role: "B.S. in Computer Science",         type: "study",    start: "2018-08", end: "2023-05",
+      gaps: [{ start: "2020-08", end: "2022-01", label: "Gap year" }] },
     { org: "Becton Dickinson",               role: "Data Science Intern",              type: "industry", start: "2019-06", end: "2019-07" },
     { org: "VinBigData",                     role: "Research Intern",                  type: "research", start: "2020-11", end: "2021-11" },
     { org: "University of Illinois Chicago", role: "Teaching Assistant",               type: "teaching", start: "2022-01", end: "2023-05" },
@@ -221,9 +222,23 @@
     row.style.setProperty("--d", "0s");
     row.innerHTML = `
       <div class="path-label"><strong>${d.org}</strong><span>${d.role}</span></div>
-      <div class="path-bar${d.end ? "" : " ongoing"}" style="left:${pct(d.s)}%;width:${pct(d.e) - pct(d.s)}%"></div>`;
+      <div class="path-bar${d.end ? "" : " ongoing"}${d.gaps ? " split" : ""}" style="left:${pct(d.s)}%;width:${pct(d.e) - pct(d.s)}%">${gapHTML(d)}</div>`;
     rows.appendChild(row);
   });
+
+  // A split bar: solid segments with a dashed, labelled break for each gap.
+  function gapHTML(d) {
+    if (!d.gaps) return "";
+    const rel = y => ((y - d.s) / (d.e - d.s)) * 100;
+    let html = "", from = 0;
+    d.gaps.forEach(g => {
+      const a = rel(toYear(g.start)), b = rel(toYear(g.end));
+      html += `<i class="seg" style="left:${from}%;width:${a - from}%"></i>`;
+      html += `<i class="gap" style="left:${a}%;width:${b - a}%"><em>${g.label || "Gap"}</em></i>`;
+      from = b;
+    });
+    return html + `<i class="seg" style="left:${from}%;width:${100 - from}%"></i>`;
+  }
 
   // Right-align each label to its bar's end, clamped inside the chart.
   function layout() {
