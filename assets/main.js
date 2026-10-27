@@ -218,7 +218,7 @@
   const toYear = s => { const [y, m] = s.split("-").map(Number); return y + (m - 1) / 12; };
   const now = new Date(); const nowY = now.getFullYear() + now.getMonth() / 12;
   const data = ENTRIES.map(e => ({ ...e, s: toYear(e.start), e: e.end ? toYear(e.end) : nowY + 0.15 }));
-  const min = Math.min(...data.map(d => d.s)) - 0.35;
+  const min = Math.floor(Math.min(...data.map(d => d.s))) - 0.05;  // start on a whole year so it gets a label
   const max = Math.max(...data.map(d => d.e)) + 0.1;
   const pct = y => ((y - min) / (max - min)) * 100;
 

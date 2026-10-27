@@ -179,7 +179,7 @@ body.intro-running { overflow: hidden; }
 .hero-path {
   margin-top: 56px;
   --study: #c3d1ff; --research: #5b8cff; --industry: #5cc8e8; --teaching: #a78bfa;
-  --grid: rgba(255,255,255,.06); --axis: rgba(255,255,255,.16);
+  --grid: rgba(255,255,255,.11); --axis: rgba(255,255,255,.3);
   --title: #fff; --muted: rgba(219,230,255,.6);
   opacity: 0; transform: translateY(30px); transition: opacity 1s ease, transform 1s var(--ease);
 }
