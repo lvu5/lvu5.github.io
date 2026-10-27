@@ -159,6 +159,7 @@ body.intro-running { overflow: hidden; }
 .hero-about > * { opacity: 0; transform: translateY(24px); filter: blur(6px); transition: opacity .9s ease, transform .9s var(--ease), filter .9s ease; }
 .hero.done .hero-about > * { opacity: 1; transform: none; filter: none; }
 .hero.done .hero-about > :nth-child(2) { transition-delay: .25s; }
+.hero.done .hero-about > :nth-child(3) { transition-delay: .5s; }
 .hero.settled .hero-about > * { transition: none; opacity: 1; transform: none; filter: none; }
 /* Words light up one after another once the intro ends. */
 .statement {
@@ -172,6 +173,8 @@ body.intro-running { overflow: hidden; }
 .statement strong .wd.lit { color: var(--sky); }
 .about-text { margin: 0; font-size: 1rem; color: rgba(219,230,255,.66); }
 .about-text strong, .about-text em { color: rgba(255,255,255,.92); }
+.interests { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: 1rem; color: #fff; }
+.interests span { display: block; margin-bottom: 4px; font-size: .8rem; color: var(--muted); }
 /* Path timeline, compact and always on navy in the hero */
 .hero-path {
   margin-top: 56px;
@@ -201,6 +204,7 @@ body.intro-running { overflow: hidden; }
   .iam { font-size: clamp(3rem, min(7vw, 10.5vh, 20cqi), 6.2rem); } /* 20cqi: fits its column */
   .statement { font-size: clamp(1.05rem, min(1.8vw, 2.7vh), 1.6rem); margin-bottom: 14px; }
   .about-text { font-size: clamp(.86rem, 1.75vh, 1rem); }
+  .interests { font-size: clamp(.86rem, 1.75vh, 1rem); margin-top: clamp(10px, 1.8vh, 18px); padding-top: clamp(10px, 1.6vh, 16px); }
   .hero-path { margin-top: clamp(20px, 4.5vh, 52px); }
   .hero-path-head { margin-bottom: 8px; }
   .hero-path .path-chart { padding-bottom: 40px; }
