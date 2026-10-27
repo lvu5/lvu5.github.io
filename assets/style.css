@@ -81,7 +81,7 @@ body.intro-running { overflow: hidden; }
   display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center;
   will-change: transform, opacity; transform-origin: 50% 0;
 }
-.hero-main { min-width: 0; }
+.hero-main { min-width: 0; container-type: inline-size; }
 
 .hello {
   position: relative; height: 1.3em; width: 100%;
@@ -118,6 +118,7 @@ body.intro-running { overflow: hidden; }
   margin: .05em 0 0; font-weight: 800;
   font-size: clamp(3.2rem, 8.5vw, 6.5rem); line-height: 1; letter-spacing: -0.055em;
   color: #fff; min-height: 1em;
+  white-space: nowrap; /* keep the 🙌 on the name line */
 }
 .iam .ch { display: inline-block; opacity: 0; transform: translateY(-80px) scale(.8); }
 .iam .ch.sp { width: .26em; }
@@ -174,7 +175,7 @@ body.intro-running { overflow: hidden; }
 .statement strong .wd.lit { color: var(--sky); }
 .about-text { margin: 0 0 26px; font-size: 1rem; color: rgba(219,230,255,.66); }
 .about-text strong, .about-text em { color: rgba(255,255,255,.92); }
-.stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .stats li {
   border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px;
   background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
@@ -214,7 +215,7 @@ body.intro-running { overflow: hidden; }
   .hero { justify-content: flex-start; padding-top: 84px; padding-bottom: 0; }
   .hero-top { grid-template-columns: .85fr 1.15fr; gap: 56px; }
   .hello { font-size: clamp(1.1rem, min(2vw, 3vh), 1.6rem); }
-  .iam { font-size: clamp(3rem, min(7vw, 10.5vh), 6.2rem); }
+  .iam { font-size: clamp(3rem, min(7vw, 10.5vh, 20cqi), 6.2rem); } /* 20cqi: fits its column */
   .statement { font-size: clamp(1.05rem, min(1.8vw, 2.7vh), 1.6rem); margin-bottom: 14px; }
   .about-text { font-size: clamp(.86rem, 1.75vh, 1rem); margin-bottom: 16px; }
   .stats li { padding: 10px 14px; border-radius: 16px; }
@@ -363,6 +364,10 @@ body.intro-running { overflow: hidden; }
 }
 
 /* ====== Reduced motion ====== */
+@media (max-width: 360px) {
+  .stats li { padding: 12px 10px; }
+  .stats span { font-size: .76rem; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   [data-reveal], [data-split] .c, .path-label, .path-bar, .path-grid span, .path-axis b,
