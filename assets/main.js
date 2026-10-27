@@ -68,6 +68,7 @@
     document.body.classList.remove("intro-running");
     // Pin the final state once the drop animations should be over, in case the browser paused them.
     setTimeout(() => hero.classList.add("settled"), 1500);
+    setTimeout(lightAbout, 450);
     if (!reduceMotion) setTimeout(startTyping, 2600);
   }
 
@@ -128,7 +129,7 @@
   const heroInner = $(".hero-inner");
   const statement = $("[data-words]");
 
-  // Light up the About statement word by word as it scrolls through the viewport.
+  // Split the About statement into words so they can light up one by one.
   const walker = document.createTreeWalker(statement, NodeFilter.SHOW_TEXT);
   const textNodes = [];
   while (walker.nextNode()) textNodes.push(walker.currentNode);
@@ -146,6 +147,13 @@
   });
   const words = $$(".wd", statement);
 
+  // Once the intro ends: light the About words in sequence, then count up the stats.
+  function lightAbout() {
+    const step = reduceMotion ? 0 : 45;
+    words.forEach((w, i) => setTimeout(() => w.classList.add("lit"), i * step));
+    setTimeout(() => $$(".hero-about [data-count]").forEach(countUp), words.length * step * 0.6);
+  }
+
   let ticking = false;
   function onScroll() {
     ticking = false;
@@ -160,10 +168,6 @@
       heroInner.style.opacity = String(Math.max(0, 1 - p * 1.4));
     }
 
-    const r = statement.getBoundingClientRect();
-    const p = reduceMotion ? 1 : Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
-    const lit = Math.round(p * words.length);
-    words.forEach((w, i) => w.classList.toggle("lit", i < lit));
   }
   addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   addEventListener("resize", onScroll);
@@ -174,7 +178,7 @@
     if (!it.isIntersecting) return;
     navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + it.target.id));
   }), { rootMargin: "-45% 0px -50% 0px" });
-  $$("main section[id]").forEach(s => sectionIO.observe(s));
+  $$("#about, main section[id]").forEach(s => sectionIO.observe(s));
 
   /* ================= Split headings into letters ================= */
   $$("[data-split]").forEach(el => {
@@ -208,6 +212,7 @@
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = target + suffix; }, dur + 200);  // in case frames were paused
   }
 
   /* ================= Card spotlight + magnetic buttons ================= */
