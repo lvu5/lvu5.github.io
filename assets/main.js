@@ -69,6 +69,7 @@
     // Pin the final state once the drop animations should be over, in case the browser paused them.
     setTimeout(() => hero.classList.add("settled"), 1500);
     setTimeout(lightAbout, 450);
+    setTimeout(startPath, 1100);
     if (!reduceMotion) setTimeout(startTyping, 2600);
   }
 
@@ -126,7 +127,7 @@
 
   /* ================= Nav ================= */
   const nav = $(".nav");
-  const heroInner = $(".hero-inner");
+  const heroTop = $(".hero-top");
   const statement = $("[data-words]");
 
   // Split the About statement into words so they can light up one by one.
@@ -161,11 +162,11 @@
     nav.classList.toggle("scrolled", y > 20);
     nav.classList.toggle("on-dark", y < hero.offsetHeight - 40);
 
-    // Hero content shrinks and fades away as you scroll past it.
+    // The intro and About shrink and fade a little as you scroll down to the Path.
     if (!reduceMotion && y < vh * 1.2) {
       const p = Math.min(1, y / vh);
-      heroInner.style.transform = `translateY(${p * 80}px) scale(${1 - p * 0.12})`;
-      heroInner.style.opacity = String(Math.max(0, 1 - p * 1.4));
+      heroTop.style.transform = `scale(${1 - p * 0.06})`;
+      heroTop.style.opacity = String(Math.max(0.15, 1 - p * 1.1));
     }
 
   }
@@ -178,7 +179,7 @@
     if (!it.isIntersecting) return;
     navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + it.target.id));
   }), { rootMargin: "-45% 0px -50% 0px" });
-  $$("#about, main section[id]").forEach(s => sectionIO.observe(s));
+  $$("#about, #path, main section[id]").forEach(s => sectionIO.observe(s));
 
   /* ================= Split headings into letters ================= */
   $$("[data-split]").forEach(el => {
@@ -315,6 +316,9 @@
       pathIO.unobserve(it.target);
     });
   }, { threshold: 0.35 });
-  pathIO.observe(chart);
-  $$(".path-row", rows).forEach(r => pathIO.observe(r));
+  // Called once the intro is over, so the bars don't draw behind it.
+  function startPath() {
+    pathIO.observe(chart);
+    $$(".path-row", rows).forEach(r => pathIO.observe(r));
+  }
 })();
