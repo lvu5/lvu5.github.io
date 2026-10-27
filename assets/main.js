@@ -68,6 +68,35 @@
     document.body.classList.remove("intro-running");
     // Pin the final state once the drop animations should be over, in case the browser paused them.
     setTimeout(() => hero.classList.add("settled"), 1500);
+    if (!reduceMotion) setTimeout(startTyping, 2600);
+  }
+
+  // After the intro, keep cycling the greeting by deleting and typing it.
+  function startTyping() {
+    hello.classList.add("typing");
+    hello.innerHTML = `<span class="typed"></span><span class="caret"></span>`;
+    const typed = $(".typed", hello);
+    const loop = [HELLOS[HELLOS.length - 1], ...HELLOS.slice(0, -1)];
+    let w = 0, text = [...loop[0]], n = text.length, deleting = true;
+    typed.textContent = loop[0];
+
+    const step = () => {
+      if (deleting) {
+        n--;
+        if (n <= 0) { deleting = false; w = (w + 1) % loop.length; text = [...loop[w]]; }
+      } else {
+        n++;
+      }
+      typed.textContent = text.slice(0, Math.max(0, n)).join("");
+      hello.classList.add("busy");
+      if (!deleting && n >= text.length) {
+        hello.classList.remove("busy");
+        deleting = true;
+        return setTimeout(step, 1800);       // hold the full word
+      }
+      setTimeout(step, deleting ? 55 : 110 + Math.random() * 60);
+    };
+    setTimeout(step, 1200);
   }
 
   $(".skip").addEventListener("click", finishIntro);

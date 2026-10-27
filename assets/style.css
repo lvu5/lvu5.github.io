@@ -109,6 +109,16 @@ body.intro-running { overflow: hidden; }
   60%  { opacity: 1; }
   100% { opacity: 1; transform: translateY(0) rotate(0); }
 }
+/* Typing mode, after the intro */
+.hello.typing span { position: static; opacity: 1; transform: none; animation: none; }
+.hello.typing .typed { white-space: pre; }
+.hello.typing .caret {
+  display: inline-block; width: 3px; height: .95em; margin-left: 4px; vertical-align: -0.1em;
+  background: var(--accent); border-radius: 2px;
+  animation: caretBlink 1s steps(1) infinite;
+}
+.hello.typing.busy .caret { animation: none; opacity: 1; }
+@keyframes caretBlink { 50% { opacity: 0; } }
 @keyframes helloOut {
   to { opacity: 0; transform: translateY(90%) rotate(3deg); filter: blur(3px); }
 }
