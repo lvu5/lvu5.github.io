@@ -138,11 +138,10 @@
   });
   const words = $$(".wd", statement);
 
-  // Once the intro ends: light the About words in sequence, then count up the stats.
+  // Once the intro ends: light the About words in sequence.
   function lightAbout() {
     const step = reduceMotion ? 0 : 45;
     words.forEach((w, i) => setTimeout(() => w.classList.add("lit"), i * step));
-    setTimeout(() => $$(".hero-about [data-count]").forEach(countUp), words.length * step * 0.6);
   }
 
   let ticking = false;
@@ -188,23 +187,9 @@
       if (el.hasAttribute("data-reveal")) el.style.setProperty("--d", `${n++ * 0.1}s`);
       el.classList.add("in");
       revealIO.unobserve(el);
-      el.querySelectorAll("[data-count]").forEach(countUp);
     });
   }, { threshold: 0.2 });
   $$("[data-reveal], [data-split]").forEach(el => revealIO.observe(el));
-
-  function countUp(el) {
-    const target = +el.dataset.count, suffix = el.dataset.suffix || "";
-    if (reduceMotion) { el.textContent = target + suffix; return; }
-    const start = performance.now(), dur = 1400;
-    const tick = now => {
-      const p = Math.min(1, (now - start) / dur);
-      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + (p === 1 ? suffix : "");
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-    setTimeout(() => { el.textContent = target + suffix; }, dur + 200);  // in case frames were paused
-  }
 
   /* ================= Card spotlight ================= */
   $$(".card").forEach(card => card.addEventListener("pointermove", e => {
