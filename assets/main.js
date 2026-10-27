@@ -217,20 +217,12 @@
     setTimeout(() => { el.textContent = target + suffix; }, dur + 200);  // in case frames were paused
   }
 
-  /* ================= Card spotlight + magnetic buttons ================= */
+  /* ================= Card spotlight ================= */
   $$(".card").forEach(card => card.addEventListener("pointermove", e => {
     const r = card.getBoundingClientRect();
     card.style.setProperty("--px", `${e.clientX - r.left}px`);
     card.style.setProperty("--py", `${e.clientY - r.top}px`);
   }));
-  if (!reduceMotion) $$(".btn").forEach(btn => {
-    btn.addEventListener("pointermove", e => {
-      const r = btn.getBoundingClientRect();
-      btn.style.setProperty("--tx", `${(e.clientX - r.left - r.width / 2) * 0.25}px`);
-      btn.style.setProperty("--ty", `${(e.clientY - r.top - r.height / 2) * 0.35}px`);
-    });
-    btn.addEventListener("pointerleave", () => { btn.style.setProperty("--tx", "0px"); btn.style.setProperty("--ty", "0px"); });
-  });
 
   /* ================= Path timeline ================= */
   // Dates are "YYYY-MM"; end: null means ongoing. Optional gaps: [{ start, end, label }].
