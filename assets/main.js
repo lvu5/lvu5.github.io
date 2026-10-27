@@ -67,7 +67,8 @@
     hero.classList.add("done");
     document.body.classList.remove("intro-running");
     // Pin the final state once the drop animations should be over, in case the browser paused them.
-    setTimeout(() => hero.classList.add("settled"), 1500);
+    // Re-measure the Path once everything has stopped moving.
+    setTimeout(() => { hero.classList.add("settled"); layout(); }, 1500);
     setTimeout(lightAbout, 450);
     setTimeout(startPath, 1100);
     if (!reduceMotion) setTimeout(startTyping, 2600);
@@ -290,16 +291,38 @@
     return html + `<i class="seg" style="left:${from}%;width:${100 - from}%"></i>`;
   }
 
-  // Right-align each label to its bar's end, clamped inside the chart.
+  // On wide screens the whole first screen fits in the viewport: rows share the
+  // height left below the intro and About, and each label sits beside its bar.
+  const compact = matchMedia("(min-width: 901px)");
+  const heroEl = $(".hero");
   function layout() {
     const W = rows.clientWidth;
+    const isCompact = compact.matches;
+    if (isCompact) {
+      rows.style.setProperty("--row", "30px");
+      const top = rows.getBoundingClientRect().top - heroEl.getBoundingClientRect().top;
+      const avail = innerHeight - top - 56;  // room for the axis and bottom padding
+      rows.style.setProperty("--row", `${Math.max(24, Math.min(44, avail / data.length))}px`);
+    } else {
+      rows.style.removeProperty("--row");
+    }
     $$(".path-row", rows).forEach((row, i) => {
       const label = $(".path-label", row);
+      const startX = (pct(data[i].s) / 100) * W;
       const endX = (pct(data[i].e) / 100) * W;
       const w = label.offsetWidth;
-      const left = Math.max(0, Math.min(endX - w, W - w));
+      let left, right;
+      if (isCompact) {
+        // After the bar if it fits, otherwise before it.
+        right = endX + 12 + w > W;
+        left = right ? Math.max(0, startX - 12 - w) : endX + 12;
+      } else {
+        // Above the bar, right-aligned to its end, kept inside the chart.
+        left = Math.max(0, Math.min(endX - w, W - w));
+        right = left > 0;
+      }
       label.style.left = left + "px";
-      label.classList.toggle("right", left > 0);
+      label.classList.toggle("right", right);
     });
   }
   layout();

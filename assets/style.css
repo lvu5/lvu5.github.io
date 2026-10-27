@@ -81,7 +81,7 @@ body.intro-running { overflow: hidden; }
 
 /* ====== Hero (always deep navy) ====== */
 .hero {
-  min-height: 100vh; min-height: 100svh; position: relative; overflow: hidden;
+  min-height: 100vh; min-height: 100svh; position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: left; padding: 104px 16px 110px;
   background: radial-gradient(120% 90% at 50% 0%, var(--navy-2) 0%, var(--navy-1) 45%, var(--navy-0) 100%);
@@ -94,7 +94,9 @@ body.intro-running { overflow: hidden; }
 }
 .hero-main { min-width: 0; }
 
-.glow { position: absolute; inset: 0; pointer-events: none; }
+/* Only the glow layer clips. If the hero clipped, links to #path would scroll the
+   hero's own content up out of reach. */
+.glow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .glow span {
   position: absolute; border-radius: 50%; filter: blur(80px); opacity: .55;
   translate: var(--mx, 0) var(--my, 0); transition: translate 1.2s var(--ease);
@@ -262,6 +264,32 @@ body.intro-running { overflow: hidden; }
 .hero-path .path-bar .gap em { top: 6px; font-size: .72rem; }
 .hero-path .path-axis b { font-size: .8rem; top: 14px; }
 
+/* Wide screens: intro, About and Path all fit in one screen. */
+@media (min-width: 901px) {
+  .hero { justify-content: flex-start; padding-top: 84px; padding-bottom: 0; }
+  .hero-top { grid-template-columns: .85fr 1.15fr; gap: 56px; }
+  .hello { font-size: clamp(1.1rem, min(2vw, 3vh), 1.6rem); }
+  .iam { font-size: clamp(3rem, min(7vw, 10.5vh), 6.2rem); }
+  .tagline { margin: 14px 0 22px; }
+  .statement { font-size: clamp(1.05rem, min(1.8vw, 2.7vh), 1.6rem); margin-bottom: 14px; }
+  .about-text { font-size: clamp(.86rem, 1.75vh, 1rem); margin-bottom: 16px; }
+  .stats li { padding: 10px 14px; border-radius: 16px; }
+  .stats b { font-size: clamp(1.3rem, 3vh, 1.8rem); }
+  .hero-path { margin-top: clamp(20px, 4.5vh, 52px); }
+  .hero-path-head { margin-bottom: 8px; }
+  .hero-path .path-chart { padding-bottom: 40px; }
+  .hero-path .path-grid { bottom: 40px; }
+  .hero-path .path-axis { bottom: 40px; }
+  .hero-path .path-axis b { top: 10px; }
+  .hero-path .path-row { height: var(--row, 30px); }
+  .hero-path .path-label { top: 0; line-height: var(--row, 30px); }
+  .hero-path .path-label strong { font-size: .9rem; }
+  .hero-path .path-label span { font-size: .8rem; margin-left: 6px; }
+  .hero-path .path-bar { top: calc(var(--row, 30px) / 2 - 3px); height: 6px; }
+  /* The label sits beside the bar, so "Gap year" goes just above the dashes. */
+  .hero-path .path-bar .gap em { top: -17px; font-size: .7rem; }
+}
+
 /* Path timeline */
 .path-legend { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: -16px 0 32px; color: var(--muted); list-style: none; padding: 0; font-weight: 500; }
 .path-legend li { display: flex; align-items: center; gap: 10px; }
@@ -338,7 +366,7 @@ body.intro-running { overflow: hidden; }
 
 /* Contact band (always navy) */
 .band {
-  margin-top: 140px; color: #fff; position: relative; overflow: hidden;
+  margin-top: 140px; color: #fff; position: relative; overflow: clip;
   background:
     radial-gradient(70% 60% at 50% 45%, color-mix(in srgb, var(--navy-3) 85%, transparent), transparent 70%),
     linear-gradient(180deg, var(--navy-1), var(--navy-2) 50%, var(--navy-1));
