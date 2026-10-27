@@ -1,0 +1,227 @@
+(() => {
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ================= Hero intro ================= */
+  // "Hello" drops in, in different languages, ending on Vietnamese.
+  const HELLOS = ["Hello", "Hola", "Bonjour", "こんにちは", "안녕하세요", "Ciao", "Hallo", "مرحبا", "你好", "Olá", "नमस्ते", "Xin chào"];
+  const GREETING = "I'm ";
+  const NAME = "Linh";
+
+  const hero = $(".hero");
+  const hello = $(".hello");
+  const iam = $(".iam");
+  const timers = [];
+  let finished = false;
+
+  HELLOS.forEach(w => {
+    const s = document.createElement("span");
+    s.textContent = w;
+    hello.appendChild(s);
+  });
+  const helloEls = $$("span", hello);
+
+  [...GREETING].forEach(ch => addChar(ch, false));
+  [...NAME].forEach((ch, i) => addChar(ch, true, i));
+  function addChar(ch, isName, i) {
+    const s = document.createElement("span");
+    s.className = "ch" + (ch === " " ? " sp" : "") + (isName ? " name" : "");
+    s.textContent = ch === " " ? " " : ch;
+    if (isName) s.style.setProperty("--bp", `${(i / (NAME.length - 1)) * 100}%`);
+    s.setAttribute("aria-hidden", "true");
+    iam.appendChild(s);
+  }
+  const chars = $$(".ch", iam);
+
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+  function playIntro() {
+    let t = 300;
+    helloEls.forEach((el, i) => {
+      const last = i === helloEls.length - 1;
+      later(() => {
+        if (i > 0) { helloEls[i - 1].classList.remove("drop"); helloEls[i - 1].classList.add("out"); }
+        el.classList.add("drop");
+      }, t);
+      // Start slow, speed up through the middle, slow down for the last one.
+      t += last ? 0 : Math.max(230, 620 - i * 60);
+    });
+    t += 450;
+    later(() => chars.forEach((c, i) => { c.style.setProperty("--d", `${i * 75}ms`); c.classList.add("in"); }), t);
+    t += chars.length * 75 + 650;
+    later(finishIntro, t);
+  }
+
+  function finishIntro() {
+    if (finished) return;
+    finished = true;
+    timers.forEach(clearTimeout);
+    helloEls.forEach((el, i) => {
+      el.classList.remove("drop", "out");
+      el.classList.toggle("stay", i === helloEls.length - 1);
+    });
+    chars.forEach(c => { if (!c.classList.contains("in")) { c.style.setProperty("--d", "0ms"); c.classList.add("in"); } });
+    hero.classList.add("done");
+    document.body.classList.remove("intro-running");
+    // Pin the final state once the drop animations should be over, in case the browser paused them.
+    setTimeout(() => hero.classList.add("settled"), 1500);
+  }
+
+  $(".skip").addEventListener("click", finishIntro);
+  addEventListener("keydown", e => { if (e.key === "Escape") finishIntro(); });
+
+  // Skip the intro when reduced motion is on or the page opens partway down (e.g. a #link).
+  if (reduceMotion || location.hash || scrollY > 10) finishIntro();
+  else playIntro();
+
+  /* ================= Background blobs follow the pointer ================= */
+  if (!reduceMotion && matchMedia("(pointer: fine)").matches) {
+    const blobs = $$(".blob");
+    addEventListener("pointermove", e => {
+      const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+      blobs.forEach((b, i) => {
+        const k = (i % 2 ? -1 : 1) * (30 + i * 14);
+        b.style.setProperty("--mx", `${x * k}px`);
+        b.style.setProperty("--my", `${y * k}px`);
+      });
+    }, { passive: true });
+  }
+
+  /* ================= Nav ================= */
+  const nav = $(".nav");
+  const onScroll = () => nav.classList.toggle("scrolled", scrollY > 20);
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  const navLinks = $$(".nav-links a");
+  const sectionIO = new IntersectionObserver(items => items.forEach(it => {
+    if (!it.isIntersecting) return;
+    navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + it.target.id));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  $$("main section[id]").forEach(s => sectionIO.observe(s));
+
+  /* ================= Split headings into letters ================= */
+  $$("[data-split]").forEach(el => {
+    let n = 0;
+    el.innerHTML = el.textContent.split(" ").map(word =>
+      `<span class="w">${[...word].map(c => `<span class="c" style="--d:${n++ * 35}ms">${c}</span>`).join("")}</span>`
+    ).join(" ");
+  });
+
+  /* ================= Scroll reveals ================= */
+  const revealIO = new IntersectionObserver(items => {
+    let n = 0;
+    items.forEach(it => {
+      if (!it.isIntersecting) return;
+      const el = it.target;
+      if (el.hasAttribute("data-reveal")) el.style.setProperty("--d", `${n++ * 0.1}s`);
+      el.classList.add("in");
+      revealIO.unobserve(el);
+      el.querySelectorAll("[data-count]").forEach(countUp);
+    });
+  }, { threshold: 0.2 });
+  $$("[data-reveal], [data-split]").forEach(el => revealIO.observe(el));
+
+  function countUp(el) {
+    const target = +el.dataset.count, suffix = el.dataset.suffix || "";
+    if (reduceMotion) { el.textContent = target + suffix; return; }
+    const start = performance.now(), dur = 1400;
+    const tick = now => {
+      const p = Math.min(1, (now - start) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + (p === 1 ? suffix : "");
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  /* ================= Card spotlight + magnetic buttons ================= */
+  $$(".card").forEach(card => card.addEventListener("pointermove", e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--px", `${e.clientX - r.left}px`);
+    card.style.setProperty("--py", `${e.clientY - r.top}px`);
+  }));
+  if (!reduceMotion) $$(".btn").forEach(btn => {
+    btn.addEventListener("pointermove", e => {
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty("--tx", `${(e.clientX - r.left - r.width / 2) * 0.25}px`);
+      btn.style.setProperty("--ty", `${(e.clientY - r.top - r.height / 2) * 0.35}px`);
+    });
+    btn.addEventListener("pointerleave", () => { btn.style.setProperty("--tx", "0px"); btn.style.setProperty("--ty", "0px"); });
+  });
+
+  /* ================= Path timeline ================= */
+  // Dates are "YYYY-MM"; end: null means ongoing.
+  const ENTRIES = [
+    { org: "University of Illinois Chicago", role: "B.S. in Computer Science",         type: "study",    start: "2018-08", end: "2023-05" },
+    { org: "Becton Dickinson",               role: "Data Science Intern",              type: "industry", start: "2019-06", end: "2019-07" },
+    { org: "VinBigData",                     role: "Research Intern",                  type: "research", start: "2020-11", end: "2021-11" },
+    { org: "University of Illinois Chicago", role: "Teaching Assistant",               type: "teaching", start: "2022-01", end: "2023-05" },
+    { org: "University of Illinois Chicago", role: "Research Assistant",               type: "research", start: "2022-06", end: "2023-06" },
+    { org: "UIC College of Dentistry",       role: "Graduate IT Help Desk Assistant",  type: "industry", start: "2023-06", end: "2024-06" },
+    { org: "University of Illinois Chicago", role: "M.S. in Computer Science",         type: "study",    start: "2023-08", end: "2024-07" },
+    { org: "University of Illinois Chicago", role: "Master’s Project Mentor",          type: "teaching", start: "2024-05", end: "2024-12" },
+    { org: "National Louis University",      role: "Lecturer",                         type: "teaching", start: "2024-08", end: "2025-03" },
+    { org: "MBZUAI",                         role: "Research Associate II",            type: "research", start: "2025-04", end: null },
+  ];
+  const STAGGER = 0.12;
+
+  const toYear = s => { const [y, m] = s.split("-").map(Number); return y + (m - 1) / 12; };
+  const now = new Date(); const nowY = now.getFullYear() + now.getMonth() / 12;
+  const data = ENTRIES.map(e => ({ ...e, s: toYear(e.start), e: e.end ? toYear(e.end) : nowY + 0.15 }));
+  const min = Math.min(...data.map(d => d.s)) - 0.35;
+  const max = Math.max(...data.map(d => d.e)) + 0.1;
+  const pct = y => ((y - min) / (max - min)) * 100;
+
+  const chart = $(".path-chart");
+  const grid = $(".path-grid");
+  const rows = $(".path-rows");
+  const axis = $(".path-axis");
+
+  for (let y = Math.ceil(min); y <= max; y++) {
+    grid.insertAdjacentHTML("beforeend", `<span style="left:${pct(y)}%"></span>`);
+    if (y % 2 === 0) axis.insertAdjacentHTML("beforeend", `<b style="left:calc(12px + (100% - 24px) * ${pct(y) / 100})">${y}</b>`);
+  }
+
+  data.forEach(d => {
+    const row = document.createElement("div");
+    row.className = "path-row";
+    row.style.setProperty("--c", `var(--${d.type})`);
+    row.style.setProperty("--d", "0s");
+    row.innerHTML = `
+      <div class="path-label"><strong>${d.org}</strong><span>${d.role}</span></div>
+      <div class="path-bar${d.end ? "" : " ongoing"}" style="left:${pct(d.s)}%;width:${pct(d.e) - pct(d.s)}%"></div>`;
+    rows.appendChild(row);
+  });
+
+  // Right-align each label to its bar's end, clamped inside the chart.
+  function layout() {
+    const W = rows.clientWidth;
+    $$(".path-row", rows).forEach((row, i) => {
+      const label = $(".path-label", row);
+      const endX = (pct(data[i].e) / 100) * W;
+      const w = label.offsetWidth;
+      const left = Math.max(0, Math.min(endX - w, W - w));
+      label.style.left = left + "px";
+      label.classList.toggle("right", left > 0);
+    });
+  }
+  layout();
+  addEventListener("resize", layout);
+  document.fonts?.ready.then(layout);
+
+  // Rows revealed in the same batch are staggered one after another.
+  const pathIO = new IntersectionObserver(items => {
+    let n = 0;
+    items.forEach(it => {
+      if (!it.isIntersecting) return;
+      if (it.target.classList.contains("path-row")) it.target.style.setProperty("--d", `${n++ * STAGGER}s`);
+      it.target.classList.add("in");
+      pathIO.unobserve(it.target);
+    });
+  }, { threshold: 0.35 });
+  pathIO.observe(chart);
+  $$(".path-row", rows).forEach(r => pathIO.observe(r));
+})();
