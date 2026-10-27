@@ -268,7 +268,7 @@
       rows.style.setProperty("--row", "30px");
       const top = rows.getBoundingClientRect().top - heroEl.getBoundingClientRect().top;
       const avail = innerHeight - top - 56;  // room for the axis and bottom padding
-      rows.style.setProperty("--row", `${Math.max(24, Math.min(44, avail / data.length))}px`);
+      rows.style.setProperty("--row", `${Math.max(22, Math.min(44, avail / data.length))}px`);
     } else {
       rows.style.removeProperty("--row");
     }
